@@ -3,7 +3,7 @@ import { Clock, Users, TrendingUp, ArrowRight } from "lucide-react"
 import { PinataSDK } from "pinata";
 import { useEffect, useState } from "react";
 export default function AuctionCard({props}) {
-  console.log("My Props Are:::::::",props);
+  console.log("My Props Are:::::::",props.increment);
   
   console.log("My props are :::::",props);
   const [imageUrl, setimageUrl] = useState("");
@@ -31,7 +31,7 @@ const fetchImageUrl=async(cid)=>{
 
 useEffect(() => {
   console.log("use Effect Running");
-  fetchImageUrl(props.image);
+  fetchImageUrl(props.imgUrl);
   
 }, [])
 
@@ -50,7 +50,7 @@ useEffect(() => {
             <div className="relative mb-4 overflow-hidden rounded-xl">
               <div className="aspect-w-1 aspect-h-1">
                 <img
-                  src="/placeholder.svg?height=400&width=400"
+                  src={imageUrl}
                   alt="Product Name"
                   className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                 />
@@ -59,7 +59,7 @@ useEffect(() => {
               <div className="absolute left-3 top-3 rounded-full bg-black/70 px-3 py-1 backdrop-blur-sm">
                 <div className="flex items-center gap-1">
                   <Clock className="h-4 w-4 text-white" />
-                  <span className="text-sm text-white">22h 39m</span>
+                  <span className="text-sm text-white">{props.endTime}</span>
                 </div>
               </div>
             </div>
@@ -67,9 +67,9 @@ useEffect(() => {
             {/* Product Info */}
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-semibold">Limited Edition Collectible</h3>
+                <h3 className="text-lg font-semibold">{props.title}</h3>
                 <p className="mt-1 text-sm text-gray-500 line-clamp-2">
-                  Rare digital collectible featuring unique artwork. Limited release with certificate of authenticity.
+                 {props.desc  }
                 </p>
               </div>
 
@@ -77,16 +77,16 @@ useEffect(() => {
               <div className="grid grid-cols-3 gap-4 rounded-lg bg-gray-50 p-3">
                 <div>
                   <p className="text-xs text-gray-500">Current Bid</p>
-                  <p className="font-semibold">2.5 ETH</p>
+                  <p className="font-semibold">{String(props.minPayableBid)} ETH</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Min Bid</p>
-                  <p className="font-semibold">0.1 ETH</p>
+                  <p className="font-semibold">{String(props.increment)} ETH</p>
                 </div>
                 <div>
                   <div className="flex items-center gap-1">
                     <Users className="h-4 w-4 text-gray-400" />
-                    <p className="font-semibold">28</p>
+                    <p className="font-semibold">XX</p>
                   </div>
                   <p className="text-xs text-gray-500">Bids</p>
                 </div>
