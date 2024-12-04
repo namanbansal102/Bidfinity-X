@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import AuctionCard from '../components/AuctionCArd'
 import Web3 from 'web3';
-const contractAdd="0xdfa986440dfa2357bA1a63eb8F088f2C1b72a766";
+const contractAdd="0xA3d0730fF9fECC402757A86F7a7046FeAb228e75";
 import ABI from "./ABI.json";
 const web3=new Web3(window.ethereum )
 const contract=new web3.eth.Contract(ABI,contractAdd)
 console.log(contract);
 
-const ViewHospital = () => {
+const ViewAuctions = () => {
   console.log("View");
-  
-  
-  const [hospitals, sethospitals] = useState([])
-  const loadHospitals=async()=>{
+  const [auctions, setauctions] = useState([])
+  const loadauctions=async()=>{
     try {
         
     
@@ -20,11 +18,11 @@ const ViewHospital = () => {
     const userAddress=accounts[0];
     console.log("My user Address is:::"+userAddress);
     
-    const notes=await contract.methods.viewhospitals().call({from:userAddress});
+    const notes=await contract.methods.listAuctions().call({from:userAddress});
     console.log("my Notes are:::",notes);
     
-    sethospitals(notes);
-    console.log("My Hospitals are::::::::::",hospitals);
+    setauctions(notes);
+    console.log("My auctions are::::::::::",auctions);
 } catch (error) {
         console.log(error); 
 }
@@ -34,18 +32,18 @@ const ViewHospital = () => {
   useEffect(() => {
     console.log("use effect Running");
     
-  loadHospitals();
+  loadauctions();
   }, [])
 
 
   return (
     <div>
-      <center className='text-4xl font-bold mt-2'>
-      Registered hospitals are
+      <center className='text-[50px] mt-5 font-bold mb-4 bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent'>
+      Active Auctions are
       </center>
       <div className="grid-cards grid grid-cols-3 gap-x-2">
-        {hospitals.map(()=>{
-          return  <AuctionCard></AuctionCard>
+        {auctions.map((auctionData)=>{
+          return  <AuctionCard props={auctionData}></AuctionCard>
         })}
  
       </div>
@@ -53,4 +51,4 @@ const ViewHospital = () => {
   )
 }
 
-export default ViewHospital
+export default ViewAuctions

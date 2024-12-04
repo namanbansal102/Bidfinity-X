@@ -5,31 +5,76 @@
 		"type": "constructor"
 	},
 	{
+		"anonymous": false,
 		"inputs": [
 			{
+				"indexed": true,
 				"internalType": "uint256",
-				"name": "",
+				"name": "auctionId",
 				"type": "uint256"
-			}
-		],
-		"name": "accessers",
-		"outputs": [
+			},
 			{
+				"indexed": true,
 				"internalType": "address",
-				"name": "",
+				"name": "owner",
 				"type": "address"
 			}
 		],
-		"stateMutability": "view",
-		"type": "function"
+		"name": "AuctionCreated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "auctionId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "winner",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "winningAmount",
+				"type": "uint256"
+			}
+		],
+		"name": "AuctionEnded",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "auctionId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "bidder",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "BidPlaced",
+		"type": "event"
 	},
 	{
 		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_hName",
-				"type": "string"
-			},
 			{
 				"internalType": "string",
 				"name": "_imgUrl",
@@ -37,21 +82,36 @@
 			},
 			{
 				"internalType": "string",
-				"name": "_manager",
+				"name": "_title",
 				"type": "string"
 			},
 			{
 				"internalType": "string",
-				"name": "_phone",
+				"name": "_desc",
 				"type": "string"
 			},
 			{
 				"internalType": "string",
-				"name": "_email",
+				"name": "_endTime",
 				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_bids",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_minPayableBid",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_increment",
+				"type": "uint256"
 			}
 		],
-		"name": "addHospital",
+		"name": "addAuction",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -59,119 +119,37 @@
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "u_add",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "_date",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_expiryDate",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_recordUrl",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_rstatus",
-				"type": "string"
-			}
-		],
-		"name": "addUserData",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "u_add",
-				"type": "address"
-			}
-		],
-		"name": "fetchUserProfile",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "uint256",
-						"name": "rId",
-						"type": "uint256"
-					},
-					{
-						"internalType": "address",
-						"name": "u_add",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "hId",
-						"type": "uint256"
-					},
-					{
-						"internalType": "string",
-						"name": "date",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "expiry",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "recordUrl",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "r_status",
-						"type": "string"
-					}
-				],
-				"internalType": "struct PRH.record[]",
+				"internalType": "uint256",
 				"name": "",
-				"type": "tuple[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "hId",
-		"outputs": [
+				"type": "uint256"
+			},
 			{
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
 			}
 		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "h_map",
+		"name": "auctionBids",
 		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "auctionId",
 				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "userAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "bidAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "bidTime",
+				"type": "string"
 			}
 		],
 		"stateMutability": "view",
@@ -185,17 +163,12 @@
 				"type": "uint256"
 			}
 		],
-		"name": "hospitals",
+		"name": "auctions",
 		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "hId",
+				"name": "id",
 				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "hospitalName",
-				"type": "string"
 			},
 			{
 				"internalType": "string",
@@ -203,24 +176,44 @@
 				"type": "string"
 			},
 			{
+				"internalType": "string",
+				"name": "title",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "desc",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "endTime",
+				"type": "string"
+			},
+			{
 				"internalType": "uint256",
-				"name": "nRecords",
+				"name": "bids",
 				"type": "uint256"
 			},
 			{
-				"internalType": "string",
-				"name": "manager",
-				"type": "string"
+				"internalType": "uint256",
+				"name": "minPayableBid",
+				"type": "uint256"
 			},
 			{
-				"internalType": "string",
-				"name": "phone",
-				"type": "string"
+				"internalType": "uint256",
+				"name": "increment",
+				"type": "uint256"
 			},
 			{
-				"internalType": "string",
-				"name": "email",
-				"type": "string"
+				"internalType": "bool",
+				"name": "isEnded",
+				"type": "bool"
+			},
+			{
+				"internalType": "address payable",
+				"name": "owner",
+				"type": "address"
 			}
 		],
 		"stateMutability": "view",
@@ -228,12 +221,12 @@
 	},
 	{
 		"inputs": [],
-		"name": "rId",
+		"name": "contractOwner",
 		"outputs": [
 			{
-				"internalType": "uint256",
+				"internalType": "address",
 				"name": "",
-				"type": "uint256"
+				"type": "address"
 			}
 		],
 		"stateMutability": "view",
@@ -243,46 +236,34 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "_auctionId",
 				"type": "uint256"
 			}
 		],
-		"name": "u_map",
-		"outputs": [
+		"name": "endAuction",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "rId",
+				"name": "_auctionId",
 				"type": "uint256"
-			},
+			}
+		],
+		"name": "getHighestPayableBid",
+		"outputs": [
 			{
 				"internalType": "address",
-				"name": "u_add",
+				"name": "",
 				"type": "address"
 			},
 			{
 				"internalType": "uint256",
-				"name": "hId",
+				"name": "",
 				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "date",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "expiry",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "recordUrl",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "r_status",
-				"type": "string"
 			}
 		],
 		"stateMutability": "view",
@@ -290,7 +271,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "userId",
+		"name": "idCount",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -303,7 +284,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "viewhospitals",
+		"name": "listAuctions",
 		"outputs": [
 			{
 				"components": [
@@ -314,18 +295,181 @@
 					},
 					{
 						"internalType": "string",
-						"name": "name",
+						"name": "imgUrl",
 						"type": "string"
 					},
 					{
 						"internalType": "string",
-						"name": "image",
+						"name": "title",
 						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "desc",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "endTime",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "bids",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minPayableBid",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "increment",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isEnded",
+						"type": "bool"
+					},
+					{
+						"internalType": "address payable",
+						"name": "owner",
+						"type": "address"
 					}
 				],
-				"internalType": "struct PRH.HospitalDetail[]",
+				"internalType": "struct Auction.AuctionItem[]",
 				"name": "",
 				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_auctionId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_bidAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_bidTime",
+				"type": "string"
+			}
+		],
+		"name": "placeBid",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "users",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "auctionId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "userAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "bidAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "bidTime",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_id",
+				"type": "uint256"
+			}
+		],
+		"name": "viewAuction",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "imgUrl",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "title",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "desc",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "endTime",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "bids",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minPayableBid",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "increment",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isEnded",
+						"type": "bool"
+					},
+					{
+						"internalType": "address payable",
+						"name": "owner",
+						"type": "address"
+					}
+				],
+				"internalType": "struct Auction.AuctionItem",
+				"name": "",
+				"type": "tuple"
 			}
 		],
 		"stateMutability": "view",

@@ -7,7 +7,7 @@ import { Navigate, Route,BrowserRouter as Router, Routes } from 'react-router-do
 import UserProfile from './pages/UserProfile'
 import AddHospital from './pages/AddHospital'
 import PatientRegistration from './pages/RegisterPatient'
-import ViewHospital from './pages/ViewHospital'
+import ViewAuctions from './pages/ViewAuctions'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -18,7 +18,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Home></Home>}></Route>
         <Route path='/userProfile' element={<UserProfile></UserProfile>}></Route>
-        <Route path='/viewHospital' element={<ViewHospital></ViewHospital>}></Route>
+        <Route path='/viewAuctions' element={<ViewAuctions></ViewAuctions>}></Route>
         <Route path='/add-hospital' element={<AddHospital></AddHospital>}></Route>
         <Route path='/register-patient' element={<PatientRegistration></PatientRegistration>}></Route>
         {/* <Route path='/view-auction/:id' element={<AuctionPage></AuctionPage>}></Route> */}
