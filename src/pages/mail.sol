@@ -12,9 +12,9 @@ contract Auction {
         uint256 increment;
         bool isEnded;
         address owner;
-
     }
     struct user{
+        uint acId;
         address userAddress;
         uint256 bidAmount;
         string bidTime;
@@ -29,91 +29,73 @@ contract Auction {
         owner=msg.sender;
     }
     auction[] public  auctions;
+    user[] public  users;
     mapping (uint auction_id=>user[]) public map;
     function addAuction(string calldata _imgUrl,string calldata _title,string calldata _desc,string calldata _endTime,uint _bids,uint _minPaybaleBid,uint _increment) external {
         auctions.push(auction(idCount,_imgUrl,_title,_desc,_endTime,_bids,_minPaybaleBid,_increment,false,payable (msg.sender)));
         idCount++;
     }
     function listAuctions() public view returns(auction[] memory){
-        
-        return auctions;
+        auction[] memory auctionArray=new auction[](auctions.length);
+        uint k=0;
+        for (uint256 i = 0; i < auctions.length; i++) {
+            if(auctions[i].isEnded==false){
+                auctionArray[k]=auctions[i];
+                k++;
+            }
+        }
+        return auctionArray;
     }
 
-    function getHighestPayableBid(uint _auctionId)public view   returns(user memory){
-        user[] memory userArray=map[_auctionId];
+    function getHighestPayableBid(uint _auctionId)public view   returns(address,uint){
+        user[] memory userArray=users;
+        // we have given an user array in 2nf form we have to find maximum bi
         uint256 highest=0;
+        address u_add;
         uint id=0;
         for(uint i=0;i<userArray.length;i++){
             uint256 amount=userArray[i].bidAmount;
            if(amount>=highest){// comparing time function should be add after there
-            id=i;
+           if(u_add==userArray[i].userAddress){
+            highest+=amount;
+           }
+           else{
+            u_add=userArray[i].userAddress;
             highest=amount;
            }
+           }
         }
-        return  userArray[id];
+        return  (u_add,highest);
     }
 
-    function viewAuction(uint _id)public view returns(complete memory){
-        auction memory m=auctions[_id];
-        user memory highestUser=getHighestPayableBid(_id);
-        complete memory comp=complete(m,highestUser);
-        return comp ;
+    function viewAuction(uint _id)public view returns(auction memory){
+        return auctions[_id];
     }
 
-    function placeBid(uint _auctionId,uint _bidAmount) external   {
+    function placeBid(uint _auctionId,uint _bidAmount,string calldata _bidTime) external   {
         require(_bidAmount>auctions[_auctionId].increment,"Amount Less Than Increment");
-        user[] memory userArray=map[_auctionId];
         uint256 weiAmount=_bidAmount*1 ether;
-        bool isFound=false;
-        for(uint i=0;i<userArray.length;i++){
-            if(userArray[i].userAddress==msg.sender){
-                payable(auctions[_auctionId].owner).transfer(_bidAmount);
-                userArray[i].bidAmount+=weiAmount;// Incrementing the Bidding Ammount to Certain Value
-                isFound=true;
-                break;
-            }  
-        }
-        if(isFound==false){
-            // userArray.push(user(msg.sender,weiAmount));
-            payable(auctions[_auctionId].owner).transfer(weiAmount);
-        }  
+        payable(auctions[_auctionId].owner).transfer(weiAmount);
+        users.push(user(_auctionId,msg.sender,_bidAmount,_bidTime));
     }
 
     function endAuction(uint  _auctionId) external{
+        require(msg.sender==auctions[_auctionId].owner,"Not Admin");
+        // return the money to all remaining persons
+        (address winAdd,uint totalAmount)=getHighestPayableBid(_auctionId);
+        
+        for (uint i = 0; i < users.length; i++) {
+            if(users[i].userAddress!=winAdd){
+                uint256 weiAmount=users[i].bidAmount*1 ether;
+                payable(users[i].userAddress).transfer(weiAmount);
+            }
+        }
+        // after giving all to except him
+        payable(winAdd).transfer(totalAmount-auctions[_auctionId].minPaybaleBid);
         auctions[_auctionId].isEnded=true;
-        uint256 minPayableAmount=auctions[_auctionId].minPaybaleBid;
-        user[] memory userArray=map[_auctionId];
-        user memory highestUser=getHighestPayableBid(_auctionId);
-        for(uint i=0;i<userArray.length;i++){
-             address payable userAdd = payable(userArray[i].userAddress); 
-            uint amount=userArray[i].bidAmount;
-        
-            if(userAdd==highestUser.userAddress){
-                if(amount-minPayableAmount>0){
-               userAdd.transfer(amount);
-                }
-                else{
-
-                userAdd.transfer(amount-minPayableAmount);
-                }
-               
-            }
-            else{
-                // transferring the amount to all the person whose amount is not equal to that
-               userAdd.transfer(amount);
-fdfdfdf
-            }
-        
-
+        // finally my auction is ended
     }
-    
-    
-
-    
-
-    
     }
 
      
   
-}
