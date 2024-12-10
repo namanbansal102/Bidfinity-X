@@ -4,7 +4,11 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Line, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import BiddingPageWithSidebar from './BiddingPageWithSidebar'
-
+import Web3 from 'web3';
+const contractAdd="0xdfa986440dfa2357bA1a63eb8F088f2C1b72a766";
+import ABI from "../ABI.json";
+const web3=new Web3(window.ethereum )
+const contract=new web3.eth.Contract(ABI,contractAdd)
 export default function BiddingPage() {
   const [bidAmount, setBidAmount] = useState('')
   const [bidTime, setBidTime] = useState('')
@@ -25,9 +29,32 @@ export default function BiddingPage() {
     setBidHistory(mockData)
   }, [])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     console.log('Bid submitted:', { bidAmount, bidTime, bidDate })
+    
+    if (typeof window.ethereum === 'undefined') {
+      setError('Please install MetaMask or another Web3 provider to interact with the blockchain.')
+      setIsLoading(false)
+      return
+    }
+      // Connect to the Ethereum network
+      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+      const userAddress=accounts[0];
+      console.log("My user Address is:::"+userAddress);
+      // let p=await handleIPFSUpload();
+      let p="";
+      console.log("My Upload URL is:::::",p);
+      const res=await contract.methods.placeBid(
+    0,
+    parseInt(bidAmount),
+    (bidTime+"_"+bidDate)
+      ).send({
+        from:userAddress,
+        gasPrice:await web3.eth.getGasPrice()
+      })
+      console.log("My Final Result Called is:::::"+res);
+      
   }
 
   return (
