@@ -42,8 +42,8 @@ export default function Component() {
           <div className="flex items-center">
             {/* Logo */}
             <div className="flex-shrink-0">
-              <span className="text-3xl font-bold text-purple-500 ">
-                Vite
+              <span className="text-3xl font-bold text-green-500 ">
+                Bidifinity-X
               </span>
             </div>
 

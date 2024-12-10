@@ -18,7 +18,7 @@ const ViewAuctions = () => {
     const userAddress=accounts[0];
     console.log("My user Address is:::"+userAddress);
     
-    const notes=await contract.methods.listAuctions().call({from:userAddress});
+    const notes=await contract.methods.listAuctions().call();
     console.log("my Notes are:::",notes);
     
     setauctions(notes);

@@ -42,7 +42,7 @@ export default function Home() {
   
             {/* Hero Text */}
             <p className="font-bold text-5xl lg:text-[90px] flex flex-col">
-              <span className="whitespace-nowrap">New horizons.</span>
+              <span className="whitespace-nowrap">New Auctions.</span>
               <span>It's Neo X.</span>
             </p>
   

@@ -1,24 +1,28 @@
 'use client'
-
 import { useState } from 'react'
 import { ethers } from 'ethers'
+import { PinataSDK } from "pinata";
 import Web3 from 'web3';
 const contractAdd="0xdfa986440dfa2357bA1a63eb8F088f2C1b72a766";
 import ABI from "./ABI.json";
 const web3=new Web3(window.ethereum )
 const contract=new web3.eth.Contract(ABI,contractAdd)
 console.log(contract);
-
-export default function AddHospital() {
+const pinata = new PinataSDK({
+  pinataJwt: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJhOGIyM2U0MS1kZTg3LTRhYWYtOTVmNC1mNDBmZWQ2NjJlNzQiLCJlbWFpbCI6Im5hbWFuYmFuc2FsMTAyQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaW5fcG9saWN5Ijp7InJlZ2lvbnMiOlt7ImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxLCJpZCI6IkZSQTEifSx7ImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxLCJpZCI6Ik5ZQzEifV0sInZlcnNpb24iOjF9LCJtZmFfZW5hYmxlZCI6ZmFsc2UsInN0YXR1cyI6IkFDVElWRSJ9LCJhdXRoZW50aWNhdGlvblR5cGUiOiJzY29wZWRLZXkiLCJzY29wZWRLZXlLZXkiOiI1OGQ1ODM1NWMwYTE2ZTc4MmEwOSIsInNjb3BlZEtleVNlY3JldCI6ImIxMjVkNGNkZGYyZmUzMTc4MWY0OTcyOGRiOTBlMzFmMjNkNTNmM2YzYTI3M2NiZTViZjY0Mjc1YjljYjFiYjIiLCJleHAiOjE3NjQ3NDEzNTR9.6dTuYSdS2GBexhtowWUM8r5h7UM4VoqoHdWEBPAe27o",
+  pinataGateway: "example-gateway.mypinata.cloud",
+});
+export default function AddAuction() {
   const [imageUrl, setImageUrl] = useState(null)
+  const [imageArrayBuffer, setImageBuffer] = useState(null)
   const [formData, setFormData] = useState({
-    hospitalName: '',
-    address: '',
-    registrationCode: '',
-    patientRecords: '',
-    managerName: '',
-    contactEmail: '',
-    contactPhone: ''
+    auctionName: 'fdf',
+    desc: 'fdf',
+    minPayableBid: 0,
+    incrementalBid: 0,
+    previousBids: 0,
+    endDate: 'fdfd',
+    endTime: 'dvv'
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -26,6 +30,7 @@ export default function AddHospital() {
 
   const handleImageUpload = (event) => {
     const file = event.target.files?.[0]
+    setImageBuffer(file);
     if (file) {
       const url = URL.createObjectURL(file)
       setImageUrl(url)
@@ -36,7 +41,17 @@ export default function AddHospital() {
     const { id, value } = event.target
     setFormData(prevData => ({ ...prevData, [id]: value }))
   }
+  const handleIPFSUpload=async()=>{
+    try {
+      const uploadImage = await pinata.upload.file(imageArrayBuffer);
+      return uploadImage;
+    } 
+    catch (error) {
+      console.log("Getting Error::::",error);
+      return false;
+    }
 
+  }
   const handleSubmit = async (event) => {
     event.preventDefault()
     setIsLoading(true)
@@ -54,21 +69,26 @@ export default function AddHospital() {
       const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
       const userAddress=accounts[0];
       console.log("My user Address is:::"+userAddress);
-      const res=await contract.methods.addHospital(
-        formData.hospitalName,
-        imageUrl || '',
-        formData.managerName,
-        formData.contactPhone,
-        formData.contactEmail
+      // let p=await handleIPFSUpload();
+      let p="";
+      console.log("My Upload URL is:::::",p);
+      console.log("I am getting formdata as:::",formData);
+      const res=await contract.methods.addAuction(
+        '',
+        "",
+        "",
+        "",
+        parseInt(formData.previousBids),
+        web3.utils.toWei(formData.minPayableBid.toString(), 'ether'),
+        web3.utils.toWei(formData.incrementalBid.toString(), 'ether')
       ).send({
         from:userAddress,
         gasPrice:await web3.eth.getGasPrice()
-
       })
       console.log("My Final Result Called is:::::"+res);
       
       
-      // Call the addHospital function
+      // Call the addAuction function
 
       setSuccess(true)
     } catch (err) {
@@ -78,7 +98,7 @@ export default function AddHospital() {
       } else if (err.message.includes('user rejected transaction')) {
         setError('You rejected the transaction. Please try again and confirm the transaction in your wallet.')
       } else {
-        setError(`Failed to add hospital: ${err.message}`)
+        setError(`Failed to add auction: ${err.message}`)
       }
     } finally {
       setIsLoading(false)
@@ -92,19 +112,19 @@ export default function AddHospital() {
           background: "linear-gradient(135deg, rgb(45, 206, 137) 0%, rgb(0, 147, 233) 100%)",
         }} className="p-6">
           <h1 className="text-3xl font-bold text-center text-white">
-            Add New Hospital
+            Add New Auction
           </h1>
         </div>
         <div className="p-6">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-2">
-              <label htmlFor="hospitalImage" className="block text-lg font-semibold text-gray-700">Hospital Image</label>
+              <label htmlFor="auctionImage" className="block text-lg font-semibold text-gray-700">Auction Image</label>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 transition-all duration-300 hover:bg-gray-50 hover:border-green-500 hover:scale-105 hover:shadow-lg">
                 {imageUrl ? (
                   <div className="relative aspect-video w-full rounded-lg overflow-hidden">
                     <img
                       src={imageUrl}
-                      alt="Hospital preview"
+                      alt="Auction preview"
                       className="object-cover transition-transform duration-300 hover:scale-105"
                     />
                   </div>
@@ -118,7 +138,7 @@ export default function AddHospital() {
                   </div>
                 )}
                 <input
-                  id="hospitalImage"
+                  id="auctionImage"
                   type="file"
                   accept="image/*"
                   className="hidden"
@@ -130,7 +150,7 @@ export default function AddHospital() {
                     background: "linear-gradient(135deg, rgb(45, 206, 137) 0%, rgb(0, 147, 233) 100%)",
                   }}
                   className="w-full mt-4 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300 hover:scale-105"
-                  onClick={() => document.getElementById('hospitalImage').click()}
+                  onClick={() => document.getElementById('auctionImage').click()}
                 >
                   Select Image
                 </button>
@@ -138,107 +158,107 @@ export default function AddHospital() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="hospitalName" className="block text-lg font-semibold text-gray-700">Hospital Name</label>
+              <label htmlFor="auctionName" className="block text-lg font-semibold text-gray-700">Auction Name</label>
               <input
-                id="hospitalName"
+                id="auctionName"
                 type="text"
-                placeholder="Enter hospital name"
+                placeholder="Enter auction name"
                 required
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 transition-all duration-300 hover:border-green-400"
-                value={formData.hospitalName}
+                value={formData.auctionName}
                 onChange={handleInputChange}
               />
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="address" className="block text-lg font-semibold text-gray-700">Address</label>
+              <label htmlFor="address" className="block text-lg font-semibold text-gray-700">Description</label>
               <textarea
-                id="address"
-                placeholder="Enter complete hospital address"
+                id="desc"
+                placeholder="Enter Short Description of Auction"
                 required
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 transition-all duration-300 hover:border-green-400 min-h-[100px]"
-                value={formData.address}
+                value={formData.desc}
                 onChange={handleInputChange}
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label htmlFor="registrationCode" className="block text-lg font-semibold text-gray-700">Registration Code</label>
+                <label htmlFor="registrationCode" className="block text-lg font-semibold text-gray-700">Min Payable Bid (ETH)</label>
                 <input
-                  id="registrationCode"
+                  id="minPayableBid"
                   type="text"
-                  placeholder="Enter registration code"
+                  placeholder="Minimum Amount To Start Auction"
                   required
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 transition-all duration-300 hover:border-green-400"
-                  value={formData.registrationCode}
+                  value={formData.minPayableBid}
                   onChange={handleInputChange}
                 />
               </div>
               <div className="space-y-2">
-                <label htmlFor="patientRecords" className="block text-lg font-semibold text-gray-700">Number of Patient Records</label>
+                <label htmlFor="patientRecords" className="block text-lg font-semibold text-gray-700">Incremental Bid (ETH)</label>
                 <input
-                  id="patientRecords"
-                  type="number"
-                  placeholder="Enter number of records"
+                  id="incrementalBid"
+                  type="text"
+                  placeholder="Minimum Increment"
                   min="0"
                   required
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 transition-all duration-300 hover:border-green-400"
-                  value={formData.patientRecords}
+                  value={formData.incrementalBid}
                   onChange={handleInputChange}
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="managerName" className="block text-lg font-semibold text-gray-700">Hospital Manager Name</label>
+              <label htmlFor="managerName" className="block text-lg font-semibold text-gray-700">Previous Bids(eg,1,2,3)</label>
               <input
-                id="managerName"
+                id="previousBids"
                 type="text"
-                placeholder="Enter manager's full name"
+                placeholder="Enter Previous Bids If Have"
                 required
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 transition-all duration-300 hover:border-green-400"
-                value={formData.managerName}
+                value={formData.previousBids}
                 onChange={handleInputChange}
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label htmlFor="contactEmail" className="block text-lg font-semibold text-gray-700">Contact Email</label>
+                <label htmlFor="contactEmail" className="block text-lg font-semibold text-gray-700">End Date Of Auction</label>
                 <input
-                  id="contactEmail"
-                  type="email"
+                  id="endDate"
+                  type="date"
                   placeholder="Enter contact email"
                   required
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 transition-all duration-300 hover:border-green-400"
-                  value={formData.contactEmail}
+                  value={formData.endDate}
                   onChange={handleInputChange}
                 />
               </div>
               <div className="space-y-2">
-                <label htmlFor="contactPhone" className="block text-lg font-semibold text-gray-700">Contact Phone</label>
+                <label htmlFor="contactPhone" className="block text-lg font-semibold text-gray-700">End Time Of Auction</label>
                 <input
-                  id="contactPhone"
-                  type="tel"
+                  id="endTime"
+                  type="time"
                   placeholder="Enter contact number"
                   required
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 transition-all duration-300 hover:border-green-400"
-                  value={formData.contactPhone}
+                  value={formData.endTime}
                   onChange={handleInputChange}
                 />
               </div>
             </div>
 
             <button
-              type="submit"
+      
               style={{
                 background: "linear-gradient(135deg, rgb(45, 206, 137) 0%, rgb(0, 147, 233) 100%)",
               }}
               className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300 hover:scale-105"
               disabled={isLoading}
             >
-              {isLoading ? 'Registering...' : 'Register Hospital'}
+              {isLoading ? 'Starting...' : 'Start Auction'}
             </button>
 
             {error && (
@@ -249,7 +269,7 @@ export default function AddHospital() {
 
             {success && (
               <div className="mt-4 text-green-600 text-center">
-                Hospital successfully registered on the blockchain!
+                Auction successfully registered on the blockchain!
               </div>
             )}
           </form>
